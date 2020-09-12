@@ -1,0 +1,10 @@
+C:\Users\Cai1Hsu\source\repos\RandomStudent\bin\Release\RandomStudent.exe.config
+C:\Users\Cai1Hsu\source\repos\RandomStudent\bin\Release\RandomStudent.exe
+C:\Users\Cai1Hsu\source\repos\RandomStudent\bin\Release\RandomStudent.pdb
+C:\Users\Cai1Hsu\source\repos\RandomStudent\obj\Release\RandomStudent.Form1.resources
+C:\Users\Cai1Hsu\source\repos\RandomStudent\obj\Release\RandomStudent.Properties.Resources.resources
+C:\Users\Cai1Hsu\source\repos\RandomStudent\obj\Release\RandomStudent.csproj.GenerateResource.cache
+C:\Users\Cai1Hsu\source\repos\RandomStudent\obj\Release\RandomStudent.csproj.CoreCompileInputs.cache
+C:\Users\Cai1Hsu\source\repos\RandomStudent\obj\Release\RandomStudent.exe
+C:\Users\Cai1Hsu\source\repos\RandomStudent\obj\Release\RandomStudent.pdb
+C:\Users\Cai1Hsu\source\repos\RandomStudent\obj\Release\RandomStudent.csprojAssemblyReference.cache
