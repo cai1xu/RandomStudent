@@ -3,39 +3,44 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.Security.Cryptography;
+using System.Diagnostics;
+using System.Deployment.Internal;
 
 namespace RandomStudent
 {
-    //名单来自 live.k12top.com 通过筛选获得
     public partial class Form1 : Form
     {
         string[] z12List = null;
+        int[] orders = null;
         public Form1()
         {
             //名单来自 https://live.k12top.com:8025/Moral/Query/QueryStudentList (参数已省略)通过json解析得到
-            
+
             /*
             
-            int cnt = 0;
-            var json = JObject.Parse(File.ReadAllText(@"c:\temp\Studentlist"));
-            StringBuilder sb = new StringBuilder();
-            foreach (var item in json["Data"])
-            {
-                if (item["EduYearName"].ToString() == "高2020级" && item["TeacherName"].ToString() == "**乐") 姓名已省略
+                int cnt = 0;
+                var json = JObject.Parse(File.ReadAllText(@"c:\temp\Studentlist"));
+                StringBuilder sb = new StringBuilder();
+                foreach (var item in json["Data"])
                 {
-                    cnt++;
-                    sb.Append(item["Name"].ToString() + ",");
+                    if (item["EduYearName"].ToString() == "高2020级" && item["TeacherName"].ToString() == "**乐") 姓名已省略
+                    {
+                        cnt++;
+                        sb.Append(item["Name"].ToString() + ",");
+                    }
                 }
-            }
-            _ = sb.ToString();
-            
+                _ = sb.ToString();
+
             */
-            string source = "学生名称英文逗号间隔";
-            z12List = source.Split(',');        
+
+
+            z12List = source.Split(',');
+            orders = new int[z12List.Length];
+            for (var i = 0; i < orders.Length; i++)
+                orders[i] = i;
             InitializeComponent();
             textBox1.BorderStyle = BorderStyle.FixedSingle;
             this.Focus();
-            this.DoubleBuffered = true;
 #if DEBUG
             //ApplyResult(z12List);
             //textBox1.Text = Resource1.Z12List;
@@ -44,16 +49,7 @@ namespace RandomStudent
         }
         private void ApplyResult(string[] res)
         {
-            if (res.Length == 0)
-                return;
-            StringBuilder sb = new StringBuilder();
-            foreach (var item in res)
-            {
-                //windows的\r\n真的烦，直接\n不就好了么，浪费1个char的内存
-                sb.Append($"{item}\r\n");
-            }
-            textBox1.Text = sb.ToString().Substring(0, sb.ToString().Length - 1);
-
+            textBox1.Lines = res;
         }
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
@@ -74,23 +70,19 @@ namespace RandomStudent
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            if (radioButton2.Checked == true)
+            if (radioButton2.Checked)
                 this.numericUpDown1.Value = 5;
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-            if (radioButton1.Checked == true)
+            if (radioButton1.Checked)
                 this.numericUpDown1.Value = 3;
         }
 
         bool end = true;
-        /// <summary>
-        /// //随机数发生器 说不公平的杠精自己看
-        /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
-            //开始
             if (end)
             {
                 end = false;
@@ -103,63 +95,46 @@ namespace RandomStudent
                 end = true;
             }
         }
-
         private void begin()
         {
             while (!end)
             {
                 PickList();
-                Application.DoEvents();
                 System.Threading.Thread.Sleep(1);
+                Application.DoEvents();
             }
         }
+        static readonly RNGCryptoServiceProvider rngCrypto = new RNGCryptoServiceProvider();
         private void PickList()
         {
-
             //textBox1.Clear();
             int cnt = Convert.ToInt32(numericUpDown1.Value);
-            //拷贝静态的字符串数组至动态数字，方便删除操作
-            List<string> lst = new List<string>();
-            foreach (var item in z12List)
-            {
-                lst.Add(item);
-            }
             string[] generated = new string[cnt];
+            byte[] randomBytes = new byte[4];
             for (int i = 0; i < cnt; i++)
             {
-                int n = PickNumber(0, lst.Count - 1);
-                string name = lst[n];
+                rngCrypto.GetBytes(randomBytes);
+                uint res = BitConverter.ToUInt32(randomBytes, 0);
+                int n = (int)(res % z12List.Length);
+                string name = z12List[orders[n]];
                 generated[i] = name;
-                lst.Remove(name);
+                Swap(ref orders[n], ref orders[orders.Length - i - 1]);
             }
+            //textBox1.Text = string.Join(",", z12List);
             ApplyResult(generated);
         }
-        /// <summary>
-        /// //随机数发生器 说不公平的杠精自己看
-        /// </summary>
-        private int PickNumber(int min,int max)
+
+        private void Swap(ref int a, ref int b)
         {
-            byte[] randomBytes = new byte[4 /*Int32长度*/ ];
-            RNGCryptoServiceProvider rngCrypto =new RNGCryptoServiceProvider();
-            
-            // From MSDN:
-            //
-            // 摘要:
-            //     用经过加密的强随机值序列填充字节数组。
-            //
-            // 参数:
-            //   data:
-            //     用经过加密的强随机值序列填充的数组。
-            //
-            // 异常:
-            //   T:System.Security.Cryptography.CryptographicException:
-            //     无法获取加密服务提供程序 (CSP)。
-            //
-            //   T:System.ArgumentNullException:
-            //     data 为 null。
-            rngCrypto.GetBytes(randomBytes);
-            int res = BitConverter.ToInt32(randomBytes, 0);
-            return (res > -1 ? res : - res) % (max - min + 1) + min;
+            int c = a;
+            a = b;
+            b = c;
+        }
+
+        private void Form1_FormClosing
+            (object sender, FormClosingEventArgs e)
+        {
+            end = true;
         }
     }
 }
