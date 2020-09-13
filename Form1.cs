@@ -33,7 +33,7 @@ namespace RandomStudent
 
             */
 
-            string source = "曹鑫梦,程诗逸,邓恒睿,邓哲嫕,刁骏豪,杜登翔,杜宇谭,何颖,江嘉乐,冷佳霖,李芳瑞,李孟霖,李双满,李悦,毛进宇,彭涵,青晨,冉曦,尚崇林,佘朝阳,唐凌云,涂天杭,王泉涵,王煜宏,韦诗晨,吴晞葳,肖文婧,肖雯文,徐才益,颜子尧,叶晟,袁诗妤,张珈瑜,张铭玮,张雨轩,詹荣凯,赵俞淇,赵梓睿,周佳怡,祝艺源";
+            string source = "学生姓名逗号间隔,";
             z12List = source.Split(',');
             orders = new int[z12List.Length];
             for (var i = 0; i < orders.Length; i++)
